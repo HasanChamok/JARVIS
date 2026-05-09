@@ -1,4 +1,4 @@
-g@echo off
+@echo off
 title JARVIS v2 Setup
 echo.
 echo  ============================================
@@ -14,27 +14,33 @@ if errorlevel 1 (
 echo [OK] Python found
 
 echo.
-echo [1/6] Installing PyTorch with CUDA 12.1 for RTX 4050...
+echo [1/7] Installing PyTorch with CUDA 12.1 for RTX 4050...
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 -q
 echo [OK] PyTorch installed
 
 echo.
-echo [2/6] Installing core dependencies...
+echo [2/7] Installing core dependencies...
 pip install faster-whisper kokoro sounddevice soundfile pytz -q
+pip install resemblyzer -q
 echo [OK] Core deps done
 
 echo.
-echo [3/6] Installing real-time and memory deps...
+echo [3/7] Installing real-time and memory deps...
 pip install ollama requests -q
 echo [OK] Real-time deps done
 
 echo.
-echo [4/6] Installing GUI...
+echo [4/7] Installing GUI...
 pip install PyQt6 -q
 echo [OK] PyQt6 installed
 
 echo.
-echo [5/6] Checking Ollama...
+echo [5/7] Installing Voice Authentication deps...
+pip install numpy -q
+echo [OK] Voice Authentication deps installed
+
+echo.
+echo [6/7] Checking Ollama...
 ollama --version >nul 2>&1
 if errorlevel 1 (
     echo [WARN] Ollama not installed.
@@ -46,7 +52,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [6/6] Verifying GPU...
+echo [7/7] Verifying GPU...
 python -c "import torch; g=torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'NOT FOUND'; m=torch.cuda.get_device_properties(0).total_memory//1024**3 if torch.cuda.is_available() else 0; print(f'  GPU: {g} ({m}GB VRAM)')"
 
 echo.
@@ -58,6 +64,11 @@ echo    Start (headless):  python main.py
 echo    Start (with GUI):  python main.py --gui
 echo    Auto-start setup:  python autostart.py
 echo    Remove auto-start: python autostart.py --remove
+echo.
+echo  Voice Authentication:
+echo    Voice sample:      your_voice_sample.wav (in project folder)
+echo    Auth file:         voice_auth.py
+echo    Max attempts:      3 tries before lockout
 echo.
 echo  Before starting, run in a separate terminal:
 echo    ollama serve
